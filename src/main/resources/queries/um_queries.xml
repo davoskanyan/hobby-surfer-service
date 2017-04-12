@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<queries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:noNamespaceSchemaLocation="Synergy-Queries-Schema-1.1.xsd">
+
+	<query id="insertOrganizationPermissions" createdBy="Arpine Grigoryan" implementedBy="Hayk Zigelyan"
+		   createdOn="2016-10-31">
+		<description>
+			name="$permissionIds" type="String"
+		</description>
+		<params>
+			<param name=":organizationId" type="int"></param>
+		</params>
+		<dialects>
+			<language name="mysql">
+				<![CDATA[
+					INSERT INTO `OrganizationPermission`
+								(`OrganizationId`,
+								`PermissionId`)
+					select :organizationId, PermissionId
+					from `Permission`
+					where PermissionID in ($permissionIds);
+					]]>
+			</language>
+			<language name="postgre">
+				<![CDATA[
+					INSERT INTO "OrganizationPermission"
+								("OrganizationId",
+								"PermissionId")
+					VALUES (:organizationId, CAST(:permissionId AS uuid));
+					]]>
+			</language>
+		</dialects>
+	</query>
+	<query id="removeOrganizationPermissions" createdBy="Arpine Grigoryan" implementedBy="Hayk Zigelyan"
+		   createdOn="2016-10-31">
+		<description>
+			name="$removedPermissionIds" type="String"
+		</description>
+		<params>
+			<param name=":organizationId" type="int"></param>
+		</params>
+		<dialects>
+			<language name="mysql">
+				<![CDATA[
+					DELETE FROM `OrganizationPermission`
+					WHERE PermissionID in ($removedPermissionIds) and OrganizationId = :organizationId;
+					]]>
+			</language>
+			<language name="postgre">
+				<![CDATA[
+					DELETE FROM "OrganizationPermission"
+					WHERE "PermissionId" in ($removedPermissionIds) and "OrganizationId" = :organizationId;
+					]]>
+			</language>
+		</dialects>
+	</query>
+	<query id="loadOrganizations" createdBy="Arpine Grigoryan" implementedBy="Hayk Zigelyan" createdOn="2016-10-31">
+		<description>
+		</description>
+		<params>
+		</params>
+		<dialects>
+			<language name="mysql">
+				<![CDATA[
+					select *
+					from `Organization`
+					where OrganizationID > 0;
+					]]>
+			</language>
+			<language name="postgre">
+				<![CDATA[
+					select *
+					from "Organization";
+					]]>
+			</language>
+		</dialects>
+	</query>
+	<query id="loadOrganizationById" createdBy="Arpine Grigoryan" implementedBy="Hayk Zigelyan" createdOn="2016-10-31">
+		<description>
+		</description>
+		<params>
+			<param name=":organisationId" type="int"></param>
+		</params>
+		<dialects>
+			<language name="mysql">
+				<![CDATA[
+					select *
+					from `Organization`
+					where OrganizationID = :organisationId;
+					]]>
+			</language>
+			<language name="postgre">
+				<![CDATA[
+					select *
+					from "Organization"
+					where "OrganizationID" = :organisationId;
+					]]>
+			</language>
+		</dialects>
+	</query>
+	<query id="insertOrganization" createdBy="Arpine Grigoryan" implementedBy="Hayk Zigelyan" createdOn="2016-10-31">
+		<description>
+		</description>
+		<params>
+			<param name=":name" type="String"></param>
+			<param name=":description" type="String"></param>
+			<param name=":parentId" type="int"></param>
+			<param name=":fields" type="json"></param>
+		</params>
+		<dialects>
+			<language name="mysql">
+				<![CDATA[
+					INSERT INTO `Organization`
+								(`Name`,
+								`Description`,
+								`ParentID`)
+					VALUES		(:name,
+								:description,
+								:parentId);
+
+					]]>
+			</language>
+			<language name="postgre">
+				<![CDATA[
+					INSERT INTO "Organization"
+								("Name",
+								"Description",
+								"ParentID",
+								"Fields")
+					VALUES		(:name,
+								:description,
+								:parentId,
+								:fields) RETURNING "OrganizationID";
+
+					]]>
+			</language>
+		</dialects>
+	</query>
+
+	<query id="updateOrganization" createdBy="Arpine Grigoryan" implementedBy="Hayk Zigelyan" createdOn="2016-10-31">
+		<description>
+		</description>
+		<params>
+			<param name=":organisationId" type="int"></param>
+			<param name=":name" type="String"></param>
+			<param name=":description" type="String"></param>
+			<param name=":parentId" type="int"></param>
+			<param name=":fields" type="json"></param>
+		</params>
+		<dialects>
+			<language name="mysql">
+				<![CDATA[
+					UPDATE `Organization`
+					SET	`Name` = :name,
+					`Description` = :description,
+					`ParentID` = :parentId
+					WHERE `OrganizationID` = :organisationId;
+					]]>
+			</language>
+			<language name="postgre">
+				<![CDATA[
+					UPDATE "Organization"
+					SET	"Name" = :name,
+					"Description" = :description,
+					"ParentID" = :parentId,
+					"Fields" = :fields, "ModifiedOn" = DEFAULT
+					WHERE "OrganizationID" = :organisationId;
+					]]>
+			</language>
+		</dialects>
+	</query>
+
+	<query id="loadHobbies" createdBy="David Voskanyan" implementedBy="David Voskanyan"
+		   createdOn="2017-04-07">
+		<dialects>
+			<language name="postgre">
+				<![CDATA[
+					SELECT *
+					FROM
+						"Hobbies"
+					]]>
+			</language>
+		</dialects>
+	</query>
+
+</queries>
